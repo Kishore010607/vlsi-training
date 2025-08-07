@@ -1,0 +1,61 @@
+module decoder_2_to_4 (
+    input wire [1:0] in,     // 2-bit input
+    input wire en,           // Enable signal
+    output reg [3:0] out     // 4-bit output
+);
+
+always @(*) begin
+    if (en) begin
+        case (in)
+            2'b00: out = 4'b0001;
+            2'b01: out = 4'b0010;
+            2'b10: out = 4'b0100;
+            2'b11: out = 4'b1000;
+            default: out = 4'b0000;
+        endcase
+    end else begin
+        out = 4'b0000; // All outputs off when disabled
+    end
+end
+
+endmodule
+
+//testbench
+
+`timescale 1ns / 1ps
+
+module decoder_2_to_4_tb;
+
+    reg [1:0] in;
+    reg en;
+    wire [3:0] out;
+
+    // Instantiate the decoder
+    decoder_2_to_4 uut (
+        .in(in),
+        .en(en),
+        .out(out)
+    );
+
+    initial begin
+        $display("Time\t en in  out");
+        $monitor("%g\t %b  %b   %b", $time, en, in, out);
+
+        // Test with enable off
+        en = 0;
+        in = 2'b00; #10;
+        in = 2'b01; #10;
+        in = 2'b10; #10;
+        in = 2'b11; #10;
+
+        // Test with enable on
+        en = 1;
+        in = 2'b00; #10;
+        in = 2'b01; #10;
+        in = 2'b10; #10;
+        in = 2'b11; #10;
+
+        #10 $finish;
+    end
+
+endmodule
