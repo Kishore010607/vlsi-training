@@ -1,0 +1,58 @@
+module comparator_8bit (
+    input wire [7:0] A, B,         // 8-bit inputs
+    output wire A_gt_B,            // A > B
+    output wire A_eq_B,            // A == B
+    output wire A_lt_B             // A < B
+);
+
+// Compare logic using relational operators
+assign A_gt_B = (A > B);
+assign A_eq_B = (A == B);
+assign A_lt_B = (A < B);
+
+endmodule
+
+//testbench
+
+module tb_comparator_8bit;
+
+  // Testbench signals
+  reg [7:0] A, B;
+  wire A_gt_B, A_eq_B, A_lt_B;
+
+  // Instantiate the comparator
+  comparator_8bit uut (
+    .A(A),
+    .B(B),
+    .A_gt_B(A_gt_B),
+    .A_eq_B(A_eq_B),
+    .A_lt_B(A_lt_B)
+  );
+
+  initial begin
+    $display("Time\tA\tB\tA_gt_B\tA_eq_B\tA_lt_B");
+    
+    // Test case 1: A == B
+    A = 8'h55; B = 8'h55; #10;
+    $display("%0t\t%h\t%h\t%b\t%b\t%b", $time, A, B, A_gt_B, A_eq_B, A_lt_B);
+
+    // Test case 2: A > B
+    A = 8'hA0; B = 8'h50; #10;
+    $display("%0t\t%h\t%h\t%b\t%b\t%b", $time, A, B, A_gt_B, A_eq_B, A_lt_B);
+
+    // Test case 3: A < B
+    A = 8'h10; B = 8'hF0; #10;
+    $display("%0t\t%h\t%h\t%b\t%b\t%b", $time, A, B, A_gt_B, A_eq_B, A_lt_B);
+
+    // Test case 4: Edge case - A = 0xFF, B = 0x00
+    A = 8'hFF; B = 8'h00; #10;
+    $display("%0t\t%h\t%h\t%b\t%b\t%b", $time, A, B, A_gt_B, A_eq_B, A_lt_B);
+
+    // Test case 5: Edge case - A = 0x00, B = 0xFF
+    A = 8'h00; B = 8'hFF; #10;
+    $display("%0t\t%h\t%h\t%b\t%b\t%b", $time, A, B, A_gt_B, A_eq_B, A_lt_B);
+
+    $finish;
+  end
+
+endmodule
