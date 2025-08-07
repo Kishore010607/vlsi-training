@@ -1,0 +1,60 @@
+module priority_encoder_8_to_3 (
+    input wire [7:0] in,       // 8-bit input
+    output reg [2:0] out,      // 3-bit encoded output
+    output reg valid           // Indicates if any input is active
+);
+
+always @(*) begin
+    casez (in)
+        8'b1???????: begin out = 3'b111; valid = 1; end // Input 7
+        8'b01??????: begin out = 3'b110; valid = 1; end // Input 6
+        8'b001?????: begin out = 3'b101; valid = 1; end // Input 5
+        8'b0001????: begin out = 3'b100; valid = 1; end // Input 4
+        8'b00001???: begin out = 3'b011; valid = 1; end // Input 3
+        8'b000001??: begin out = 3'b010; valid = 1; end // Input 2
+        8'b0000001?: begin out = 3'b001; valid = 1; end // Input 1
+        8'b00000001: begin out = 3'b000; valid = 1; end // Input 0
+        default:     begin out = 3'b000; valid = 0; end // No input active
+    endcase
+end
+
+endmodule
+
+//testbench
+
+module tb_priority_encoder_8_to_3;
+
+reg [7:0] in;
+wire [2:0] out;
+wire valid;
+
+// Instantiate the encoder
+priority_encoder_8_to_3 uut (
+    .in(in),
+    .out(out),
+    .valid(valid)
+);
+
+initial begin
+    $display("Time\tInput\tOutput\tValid");
+    $monitor("%0t\t%b\t%03b\t%b", $time, in, out, valid);
+
+    // Test cases
+    in = 8'b00000000; #10; // No input active
+    in = 8'b00000001; #10; // Input 0
+    in = 8'b00000010; #10; // Input 1
+    in = 8'b00000100; #10; // Input 2
+    in = 8'b00001000; #10; // Input 3
+    in = 8'b00010000; #10; // Input 4
+    in = 8'b00100000; #10; // Input 5
+    in = 8'b01000000; #10; // Input 6
+    in = 8'b10000000; #10; // Input 7
+
+    // Multiple inputs active — should prioritize highest
+    in = 8'b00001011; #10; // Inputs 3, 1, 0 → Output should be 3
+    in = 8'b11000000; #10; // Inputs 7, 6 → Output should be 7
+
+    $finish;
+end
+
+endmodule
