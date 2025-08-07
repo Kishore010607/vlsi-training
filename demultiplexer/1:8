@@ -1,0 +1,65 @@
+module demux_1_to_8 (
+    input wire din,             // Data input
+    input wire [2:0] sel,       // 3-bit select input
+    output reg [7:0] dout       // 8-bit output
+);
+
+always @(*) begin
+    // Initialize all outputs to 0
+    dout = 8'b00000000;
+
+    // Set the selected output to din
+    case (sel)
+        3'b000: dout[0] = din;
+        3'b001: dout[1] = din;
+        3'b010: dout[2] = din;
+        3'b011: dout[3] = din;
+        3'b100: dout[4] = din;
+        3'b101: dout[5] = din;
+        3'b110: dout[6] = din;
+        3'b111: dout[7] = din;
+        default: dout = 8'b00000000;
+    endcase
+end
+
+endmodule
+
+
+
+//testbench
+
+`timescale 1ns / 1ps
+
+module demux_1_to_8_tb;
+
+    reg din;
+    reg [2:0] sel;
+    wire [7:0] dout;
+
+    // Instantiate the demux module
+    demux_1_to_8 uut (
+        .din(din),
+        .sel(sel),
+        .dout(dout)
+    );
+
+    initial begin
+        $display("Time\t din sel dout");
+        $monitor("%g\t %b   %b   %b", $time, din, sel, dout);
+
+        // Test all select lines with din = 1
+        din = 1;
+        for (sel = 0; sel < 8; sel = sel + 1) begin
+            #10;
+        end
+
+        // Test with din = 0
+        din = 0;
+        for (sel = 0; sel < 8; sel = sel + 1) begin
+            #10;
+        end
+
+        #10 $finish;
+    end
+
+endmodule
