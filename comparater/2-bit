@@ -1,0 +1,47 @@
+module comparator_2bit (
+    input wire [1:0] A, B,         // 2-bit inputs
+    output wire A_gt_B,            // A > B
+    output wire A_eq_B,            // A == B
+    output wire A_lt_B             // A < B
+);
+
+// Compare logic
+assign A_gt_B = (A > B);
+assign A_eq_B = (A == B);
+assign A_lt_B = (A < B);
+
+endmodule
+
+//testbench
+
+module tb_comparator_2bit;
+
+reg [1:0] A, B;
+wire A_gt_B, A_eq_B, A_lt_B;
+
+// Instantiate the comparator
+comparator_2bit uut (
+    .A(A),
+    .B(B),
+    .A_gt_B(A_gt_B),
+    .A_eq_B(A_eq_B),
+    .A_lt_B(A_lt_B)
+);
+
+initial begin
+    $display("Time\tA\tB\tA>B\tA==B\tA<B");
+    $monitor("%0t\t%02b\t%02b\t%b\t%b\t%b", $time, A, B, A_gt_B, A_eq_B, A_lt_B);
+
+    // Test all combinations of A and B
+    for (integer i = 0; i < 4; i = i + 1) begin
+        for (integer j = 0; j < 4; j = j + 1) begin
+            A = i[1:0];
+            B = j[1:0];
+            #10;
+        end
+    end
+
+    $finish;
+end
+
+endmodule
