@@ -1,0 +1,48 @@
+module comparator_4bit (
+    input wire [3:0] A, B,         // 4-bit inputs
+    output wire A_gt_B,            // A > B
+    output wire A_eq_B,            // A == B
+    output wire A_lt_B             // A < B
+);
+
+// Compare logic
+assign A_gt_B = (A > B);
+assign A_eq_B = (A == B);
+assign A_lt_B = (A < B);
+
+endmodule
+
+
+
+//testbench
+
+module tb_comparator_4bit;
+
+reg [3:0] A, B;
+wire A_gt_B, A_eq_B, A_lt_B;
+
+// Instantiate the comparator
+comparator_4bit uut (
+    .A(A),
+    .B(B),
+    .A_gt_B(A_gt_B),
+    .A_eq_B(A_eq_B),
+    .A_lt_B(A_lt_B)
+);
+
+initial begin
+    $display("Time\tA\tB\tA>B\tA==B\tA<B");
+    $monitor("%0t\t%04b\t%04b\t%b\t%b\t%b", $time, A, B, A_gt_B, A_eq_B, A_lt_B);
+
+    // Test a few representative cases
+    A = 4'b0000; B = 4'b0000; #10;
+    A = 4'b0010; B = 4'b0001; #10;
+    A = 4'b0101; B = 4'b0101; #10;
+    A = 4'b1111; B = 4'b0111; #10;
+    A = 4'b1000; B = 4'b1100; #10;
+    A = 4'b1111; B = 4'b1111; #10;
+
+    $finish;
+end
+
+endmodule
