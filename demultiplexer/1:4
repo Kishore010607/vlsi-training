@@ -1,0 +1,52 @@
+module demux1to4 (
+    input wire in,
+    input wire [1:0] sel,
+    output wire out0,
+    output wire out1,
+    output wire out2,
+    output wire out3
+);
+
+    assign out0 = (sel == 2'b00) ? in : 1'b0;
+    assign out1 = (sel == 2'b01) ? in : 1'b0;
+    assign out2 = (sel == 2'b10) ? in : 1'b0;
+    assign out3 = (sel == 2'b11) ? in : 1'b0;
+
+endmodule
+
+//testbench
+
+module tb_demux1to4;
+
+    reg in;
+    reg [1:0] sel;
+    wire out0, out1, out2, out3;
+
+    demux1to4 uut (
+        .in(in),
+        .sel(sel),
+        .out0(out0),
+        .out1(out1),
+        .out2(out2),
+        .out3(out3)
+    );
+
+    initial begin
+        in = 1;
+
+        sel = 2'b00; #10;
+        $display("sel=%b => out0=%b out1=%b out2=%b out3=%b", sel, out0, out1, out2, out3);
+
+        sel = 2'b01; #10;
+        $display("sel=%b => out0=%b out1=%b out2=%b out3=%b", sel, out0, out1, out2, out3);
+
+        sel = 2'b10; #10;
+        $display("sel=%b => out0=%b out1=%b out2=%b out3=%b", sel, out0, out1, out2, out3);
+
+        sel = 2'b11; #10;
+        $display("sel=%b => out0=%b out1=%b out2=%b out3=%b", sel, out0, out1, out2, out3);
+
+        $finish;
+    end
+
+endmodule
