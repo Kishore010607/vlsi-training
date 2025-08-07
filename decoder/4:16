@@ -1,0 +1,52 @@
+module decoder_4_to_16 (
+    input wire [3:0] in,       // 4-bit input
+    input wire en,             // Enable signal
+    output reg [15:0] out      // 16-bit output
+);
+
+always @(*) begin
+    if (en) begin
+        out = 16'b0000000000000001 << in; // Shift-based one-hot output
+    end else begin
+        out = 16'b0000000000000000; // All outputs off when disabled
+    end
+end
+
+endmodule
+
+//testbench
+
+`timescale 1ns / 1ps
+
+module decoder_4_to_16_tb;
+
+    reg [3:0] in;           // 4-bit input
+    reg en;                 // Enable signal
+    wire [15:0] out;        // 16-bit output
+
+    // Instantiate the decoder
+    decoder_4_to_16 uut (
+        .in(in),
+        .en(en),
+        .out(out)
+    );
+
+    initial begin
+        $display("Time\t en\t in\t\t out");
+        $monitor("%g\t %b\t %b\t %b", $time, en, in, out);
+
+        // Test with enable off
+        en = 0;
+        in = 4'b0000; #10;
+        in = 4'b1001; #10;
+
+        // Test with enable on
+        en = 1;
+        for (in = 0; in < 16; in = in + 1) begin
+            #10;
+        end
+
+        #10 $finish;
+    end
+
+endmodule
