@@ -1,0 +1,53 @@
+module priority_encoder_4_to_2 (
+    input wire [3:0] in,       // 4-bit input
+    output reg [1:0] out,      // 2-bit encoded output
+    output reg valid           // Indicates if any input is active
+);
+
+always @(*) begin
+    casez (in)  // 'z' allows for don't-care conditions
+        4'b1???: begin out = 2'b11; valid = 1; end // Input 3
+        4'b01??: begin out = 2'b10; valid = 1; end // Input 2
+        4'b001?: begin out = 2'b01; valid = 1; end // Input 1
+        4'b0001: begin out = 2'b00; valid = 1; end // Input 0
+        default: begin out = 2'b00; valid = 0; end // No input active
+    endcase
+end
+
+endmodule
+
+//testbench
+
+`timescale 1ns / 1ps
+
+module tb_priority_encoder_4_to_2;
+
+    reg [3:0] in;
+    wire [1:0] out;
+    wire valid;
+
+    // Instantiate the encoder
+    priority_encoder_4_to_2 uut (
+        .in(in),
+        .out(out),
+        .valid(valid)
+    );
+
+    initial begin
+        $display("Time\tInput\tOutput\tValid");
+        $monitor("%g\t%b\t%b\t%b", $time, in, out, valid);
+
+        // Test all input combinations
+        in = 4'b0000; #10; // No input active
+        in = 4'b0001; #10; // Input 0 active
+        in = 4'b0010; #10; // Input 1 active
+        in = 4'b0100; #10; // Input 2 active
+        in = 4'b1000; #10; // Input 3 active
+        in = 4'b0011; #10; // Input 1 and 0 active → priority to 1
+        in = 4'b0110; #10; // Input 2 and 1 active → priority to 2
+        in = 4'b1111; #10; // All active → priority to 3
+
+        $finish;
+    end
+
+endmodule
